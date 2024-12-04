@@ -1,0 +1,5 @@
+messages:
+  kick-reasons:
+    invalid-name: "&cInvalid name, please change it."
+    max-account-limit: "&cMax account limit reached."
+    service-issue: "&cCan't connect now, please try later"

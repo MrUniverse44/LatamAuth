@@ -1,2 +1,4 @@
-package net.latinplay.auth.proxy.user.messaging;public class UserMessagingChannel {
+package net.latinplay.auth.proxy.user.channel;
+
+public class UserMessagingChannel {
 }

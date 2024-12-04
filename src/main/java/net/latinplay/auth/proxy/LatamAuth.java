@@ -1,17 +1,63 @@
-package net.latinplay.auth;
+package net.latinplay.auth.proxy;
 
-import org.bukkit.plugin.java.JavaPlugin;
+import com.google.gson.Gson;
+import me.blueslime.bungeemeteor.BungeeMeteorPlugin;
+import me.blueslime.bungeemeteor.implementation.Implementer;
+import me.blueslime.bungeemeteor.storage.type.MongoDatabaseService;
+import me.blueslime.bungeemeteor.storage.type.RegistrationType;
+import net.latinplay.auth.proxy.services.*;
+import net.md_5.bungee.config.Configuration;
 
-public final class LatamAuth extends JavaPlugin {
+import java.io.File;
+
+public final class LatamAuth extends BungeeMeteorPlugin implements Implementer {
 
     @Override
     public void onEnable() {
-        // Plugin startup logic
-
+        initialize(this);
+        info(
+           "&6 ╭╮╱╱╱╱╱╭╮╱╱╱╱╱╱╭━━━╮╱╱╭╮╭╮",
+           "&6 ┃┃╱╱╱╱╭╯╰╮╱╱╱╱╱┃╭━╮┃╱╭╯╰┫┃",
+           "&6 ┃┃╱╱╭━┻╮╭╋━━┳╮╭┫┃╱┃┣╮┣╮╭┫╰━╮",
+           "&6 ┃┃╱╭┫╭╮┃┃┃╭╮┃╰╯┃╰━╯┃┃┃┃┃┃╭╮┃",
+           "&6 ┃╰━╯┃╭╮┃╰┫╭╮┃┃┃┃╭━╮┃╰╯┃╰┫┃┃┃",
+           "&6 ╰━━━┻╯╰┻━┻╯╰┻┻┻┻╯╱╰┻━━┻━┻╯╰╯"
+        );
     }
 
     @Override
-    public void onDisable() {
-        // Plugin shutdown logic
+    public void registerModules() {
+        // Registered gson
+        registerImpl(Gson.class, new Gson(), true);
+        // Overwrite settings.yml implement
+        registerImpl(
+            Configuration.class,
+            "settings.yml",
+            load(
+                new File(getDataFolder(), "settings.yml"),
+                "proxy/settings.yml"
+            )
+        );
+
+        registerModule(
+            ConnectionService.class,
+            IpService.class,
+            FloodgateService.class,
+            UserService.class,
+            ListenerService.class
+        ).finish();
+    }
+
+    @Override
+    public void registerDatabases() {
+        Configuration configuration = fetch(Configuration.class, "settings.yml");
+
+        registerDatabase(
+            new MongoDatabaseService(
+                configuration.getString("settings.mongodb.uri"),
+                configuration.getString("settings.mongodb.database"),
+                RegistrationType.DOUBLE_REGISTER
+            )
+        );
     }
 }
