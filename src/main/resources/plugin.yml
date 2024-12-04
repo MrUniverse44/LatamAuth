@@ -1,0 +1,4 @@
+name: LatamAuth
+version: '1.0.0'
+main: net.latinplay.latamAuth.LatamAuth
+api-version: '1.20'
