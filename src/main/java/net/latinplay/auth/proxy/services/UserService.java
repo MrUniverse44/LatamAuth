@@ -29,6 +29,10 @@ public class UserService implements AdvancedModule {
         );
     }
 
+    public Optional<User> find(String uuid, String username) {
+        return find(UUID.fromString(uuid), username);
+    }
+
     public Optional<ReferencedObject> findBy(String name) {
         return Optional.of(
                 playerNameMap.computeIfAbsent(

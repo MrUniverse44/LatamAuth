@@ -10,7 +10,6 @@ import net.latinplay.auth.proxy.services.IpService;
 import net.latinplay.auth.proxy.services.UserService;
 import net.latinplay.auth.proxy.user.UserSearch;
 import net.latinplay.auth.proxy.user.UserSearchResult;
-import net.latinplay.auth.proxy.user.connections.data.ConnectionData;
 import net.latinplay.auth.proxy.user.generator.Generator;
 import net.latinplay.auth.proxy.user.object.User;
 import net.latinplay.auth.proxy.user.object.UserIp;
@@ -251,6 +250,12 @@ public class PreLoginListener implements Listener, AdvancedModule {
                 return new UserSearch(
                     UserSearchResult.INVALID_CASE.replace("%username%", object.getOriginalId())
                 );
+            }
+            User result = fetch(UserService.class).find(object.getObject(), username).orElse(null);
+            if (result == null) {
+                return new UserSearch(UserSearchResult.NEW_USER);
+            } else {
+                return new UserSearch(UserSearchResult.SUCCESSFULLY, result);
             }
         }
         return new UserSearch(UserSearchResult.DATABASE_CONNECTION_ISSUE);
