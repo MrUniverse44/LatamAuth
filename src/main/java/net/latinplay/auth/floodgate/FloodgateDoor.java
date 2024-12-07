@@ -6,7 +6,7 @@ import java.util.UUID;
 
 public class FloodgateDoor {
 
-    private FloodgateApi apiService;
+    private final FloodgateApi apiService;
 
     public FloodgateDoor() {
         apiService = FloodgateApi.getInstance();

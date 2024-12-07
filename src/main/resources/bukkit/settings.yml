@@ -1,0 +1,11 @@
+# Settings section for spigot servers
+settings:
+  disabled-events:
+    food-level-change: true
+    item-held-change: true
+    player-interact: true
+    inventory-open: true
+    weather-change: true
+    player-drop: true
+    block-place: true
+    block-break: true
