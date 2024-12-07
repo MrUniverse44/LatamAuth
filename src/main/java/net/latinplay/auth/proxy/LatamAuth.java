@@ -35,6 +35,15 @@ public final class LatamAuth extends BungeeMeteorPlugin implements Implementer {
         // Overwrite settings.yml implement
         registerImpl(
             Configuration.class,
+            "messages.yml",
+            load(
+                new File(getDataFolder(), "messages.yml"),
+                "proxy/messages.yml"
+            )
+        );
+        // Overwrite settings.yml implement
+        registerImpl(
+            Configuration.class,
             "settings.yml",
             load(
                 new File(getDataFolder(), "settings.yml"),
