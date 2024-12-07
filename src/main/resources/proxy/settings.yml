@@ -3,3 +3,5 @@ settings:
   max-accounts: 5
   uuid-generator: MOJANG
   auto-fallback-to-lobbies: true
+  # Providers: ARGON2, BCRYPT
+  password-provider: ARGON2

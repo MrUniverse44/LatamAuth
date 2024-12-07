@@ -44,11 +44,19 @@
                     <relocations>
                         <relocation>
                             <pattern>me.blueslime.bungeemeteor</pattern>
-                            <shadedPattern>me.blueslime.auth.core.bungee</shadedPattern>
+                            <shadedPattern>net.latinplay.auth.core.bungee</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>me.blueslime.bukkitmeteor</pattern>
-                            <shadedPattern>me.blueslime.auth.core.bukkit</shadedPattern>
+                            <shadedPattern>net.latinplay.auth.core.bukkit</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>org.bouncycastle</pattern>
+                            <shadedPattern>net.latinplay.auth.proxy.encrypt.argon</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>org.mindrot.jbcrypt</pattern>
+                            <shadedPattern>net.latinplay.auth.proxy.encrypt.bcrypt</shadedPattern>
                         </relocation>
                     </relocations>
 
@@ -93,6 +101,16 @@
             <artifactId>caffeine</artifactId>
             <version>3.1.8</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mindrot</groupId>
+            <artifactId>jbcrypt</artifactId>
+            <version>0.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk18on</artifactId>
+            <version>1.79</version>
         </dependency>
         <dependency>
             <groupId>org.geysermc.floodgate</groupId>

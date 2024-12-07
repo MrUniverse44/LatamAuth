@@ -9,6 +9,9 @@ import net.latinplay.auth.proxy.services.*;
 import net.md_5.bungee.config.Configuration;
 
 import java.io.File;
+import java.security.SecureRandom;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ForkJoinPool;
 
 public final class LatamAuth extends BungeeMeteorPlugin implements Implementer {
 
@@ -38,6 +41,8 @@ public final class LatamAuth extends BungeeMeteorPlugin implements Implementer {
                 "proxy/settings.yml"
             )
         );
+        // Register the executor pool for async things
+        registerImpl(ExecutorService.class, new ForkJoinPool(4), true);
 
         registerModule(
             ConnectionService.class,
@@ -45,7 +50,9 @@ public final class LatamAuth extends BungeeMeteorPlugin implements Implementer {
             FloodgateService.class,
             UserService.class,
             ServerService.class,
-            ListenerService.class
+            ListenerService.class,
+            PasswordService.class,
+            CommandService.class
         ).finish();
     }
 
