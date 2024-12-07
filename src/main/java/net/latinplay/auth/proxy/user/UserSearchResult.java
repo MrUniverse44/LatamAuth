@@ -1,6 +1,6 @@
 package net.latinplay.auth.proxy.user;
 
-import me.blueslime.bungeeutilitiesapi.text.TextReplacer;
+import me.blueslime.bungeemeteor.libs.utilitiesapi.text.TextReplacer;
 
 public enum UserSearchResult {
     DATABASE_CONNECTION_ISSUE,

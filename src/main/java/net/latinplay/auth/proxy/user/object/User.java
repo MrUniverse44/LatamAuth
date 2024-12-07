@@ -1,6 +1,7 @@
 package net.latinplay.auth.proxy.user.object;
 
 import me.blueslime.bungeemeteor.storage.interfaces.*;
+import net.latinplay.auth.proxy.utils.CodeGenerator;
 
 import java.util.UUID;
 
@@ -39,6 +40,9 @@ public class User implements StorageObject {
 
     @StorageIgnore
     private UUID uuid;
+
+    @StorageIgnore
+    private String randomCode = CodeGenerator.generate();
 
     /**
      * From BukkitMeteor 1.9.1.4, you can use @StorageIdentifier
@@ -104,6 +108,10 @@ public class User implements StorageObject {
 
     public String getUsername() {
         return username;
+    }
+
+    public String getRandomCode() {
+        return randomCode;
     }
 
     public void setUsername(String username) {

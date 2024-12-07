@@ -1,9 +1,11 @@
-package net.latinplay.auth.proxy.listeners;
+package net.latinplay.auth.proxy.listeners.player;
 
 import me.blueslime.bukkitmeteor.logs.MeteorLogger;
 import me.blueslime.bungeemeteor.implementation.module.AdvancedModule;
+import me.blueslime.bungeemeteor.libs.utilitiesapi.text.TextReplacer;
 import me.blueslime.bungeemeteor.libs.utilitiesapi.text.TextUtilities;
 import me.blueslime.bungeemeteor.storage.object.ReferencedObject;
+import net.latinplay.auth.proxy.LatamAuth;
 import net.latinplay.auth.proxy.services.ConnectionService;
 import net.latinplay.auth.proxy.services.FloodgateService;
 import net.latinplay.auth.proxy.services.IpService;
@@ -18,6 +20,7 @@ import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.event.EventHandler;
+import net.md_5.bungee.event.EventPriority;
 
 import java.net.InetSocketAddress;
 import java.util.Optional;
@@ -28,8 +31,8 @@ public class PreLoginListener implements Listener, AdvancedModule {
 
     private static final Pattern NAME_PATTERN = Pattern.compile("[a-zA-Z0-9_]*");
 
-    @EventHandler(priority=64)
-    public void onPreLogin(PreLoginEvent event) {
+    @EventHandler(priority=EventPriority.HIGHEST)
+    public void on(PreLoginEvent event) {
         // If this is cancelled is by another plugin so,
         // why should I load a player that didn't join to the proxy
         if (event.isCancelled()) {
@@ -51,15 +54,8 @@ public class PreLoginListener implements Listener, AdvancedModule {
 
         if (username.length() < 3 || username.length() > 16 || !NAME_PATTERN.matcher(username).matches()) {
             event.setCancelled(true);
-            event.setReason(
-                new TextComponent(
-                    TextUtilities.colorize(
-                        messages
-                            .getString("messages.kick-reasons.invalid-name")
-                            .replace("\\n", "\n")
-                    )
-                )
-            );
+            cancel(event, messages, "messages.kick-reasons.invalid-name");
+            event.completeIntent(fetch(LatamAuth.class));
             return;
         }
 
@@ -72,15 +68,8 @@ public class PreLoginListener implements Listener, AdvancedModule {
 
             if (IP_DATA != null && IP_DATA.size() >= maxAccounts && !IP_DATA.getAccounts().contains(username)) {
                 event.setCancelled(true);
-                event.setReason(
-                    new TextComponent(
-                        TextUtilities.colorize(
-                            messages
-                                .getString("messages.kick-reasons.max-account-limit")
-                                .replace("\\n", "\n")
-                        )
-                    )
-                );
+                cancel(event, messages, "messages.kick-reasons.max-account-limit");
+                event.completeIntent(fetch(LatamAuth.class));
                 return;
             }
         }
@@ -89,18 +78,12 @@ public class PreLoginListener implements Listener, AdvancedModule {
             (data, throwable) -> {
                 if (throwable != null) {
                     event.setCancelled(true);
-                    event.setReason(
-                        new TextComponent(
-                            TextUtilities.colorize(
-                                messages
-                                    .getString("messages.kick-reasons.service-issue")
-                                    .replace("\\n", "\n")
-                            )
-                        )
-                    );
+                    cancel(event, messages, "messages.kick-reasons.service-issue");
                     return;
                 }
+
                 UserSearch search;
+
                 if (!data.isSuccessfully()) {
                     search = validate(username, true);
                 } else {
@@ -120,14 +103,14 @@ public class PreLoginListener implements Listener, AdvancedModule {
 
                 if (search.isNewUser()) {
                     Generator generator = Generator.fromString(
-                            settings.getString("settings.uuid-generator", "MOJANG")
+                        settings.getString("settings.uuid-generator", "MOJANG")
                     );
 
                     UUID uuid = generator.generate(
-                            username,
-                            user != null && user.getUniqueId() != null ?
-                                    user.getUniqueId() :
-                                    null
+                        username,
+                        user != null && user.getUniqueId() != null ?
+                            user.getUniqueId() :
+                            null
                     );
 
                     Optional<User> databaseUser = fetch(UserService.class).find(uuid, username);
@@ -137,15 +120,7 @@ public class PreLoginListener implements Listener, AdvancedModule {
 
                         if (databaseUserData.isRegistered()) {
                             event.setCancelled(true);
-                            event.setReason(
-                                    new TextComponent(
-                                            TextUtilities.colorize(
-                                                    messages
-                                                            .getString("messages.kick-reasons.occupied-username")
-                                                            .replace("\\n", "\n")
-                                            )
-                                    )
-                            );
+                            cancel(event, messages, "messages.kick-reasons.occupied-username", search.getSearchResult().getReplacer());
                             return;
                         }
                     }
@@ -153,15 +128,8 @@ public class PreLoginListener implements Listener, AdvancedModule {
                     if (user != null && user.isReliable() && settings.getBoolean("settings.auto-register-premium-users")) {
                         if (!user.getUsername().contentEquals(username)) {
                             event.setCancelled(true);
-                            event.setReason(
-                                    new TextComponent(
-                                            TextUtilities.colorize(
-                                                    messages
-                                                            .getString("messages.kick-reasons.username-from-premium-account")
-                                                            .replace("\\n", "\n")
-                                            )
-                                    )
-                            );
+                            cancel(event, messages, "messages.kick-reasons.username-from-premium-account", search.getSearchResult().getReplacer());
+                            event.completeIntent(fetch(LatamAuth.class));
                             return;
                         }
                         UUID oldenUUID = user.getUniqueId();
@@ -183,40 +151,56 @@ public class PreLoginListener implements Listener, AdvancedModule {
                     fetch(UserService.class).update(user);
                     event.getConnection().setOnlineMode(user.isPremium());
                     event.getConnection().setUniqueId(user.getUniqueId());
+                    event.completeIntent(fetch(LatamAuth.class));
                     return;
                 }
                 if (search.isInvalidCase()) {
                     event.setCancelled(true);
-                    event.setReason(
-                            new TextComponent(
-                                    TextUtilities.colorize(
-                                            messages
-                                                    .getString("messages.kick-reasons.invalid-case-name")
-                                                    .replace("\\n", "\n")
-                                    )
-                            )
-                    );
+                    cancel(event, messages, "messages.kick-reasons.invalid-case-name", search.getSearchResult().getReplacer());
+                    event.completeIntent(fetch(LatamAuth.class));
                     return;
                 }
                 if (search.isDatabaseIssue()) {
                     event.setCancelled(true);
-                    event.setReason(
-                            new TextComponent(
-                                    TextUtilities.colorize(
-                                            messages
-                                                    .getString("messages.kick-reasons.service-issue")
-                                                    .replace("\\n", "\n")
-                                    )
-                            )
-                    );
+                    cancel(event, messages, "messages.kick-reasons.service-issue", search.getSearchResult().getReplacer());
+                    event.completeIntent(fetch(LatamAuth.class));
                     return;
                 }
                 if (search.isSuccessfully()) {
+                    if (search.getUser().isPremium()) {
+                        event.getConnection().setUniqueId(
+                            UUID.fromString(search.getUser().getPremiumIdentifier())
+                        );
+                    } else {
+                        event.getConnection().setUniqueId(
+                            search.getUser().getUniqueId()
+                        );
+                    }
                     event.getConnection().setOnlineMode(
                         search.getUser().isPremium()
                     );
+                    fetch(UserService.class).update(search.getUser());
+                    event.completeIntent(fetch(LatamAuth.class));
                 }
             }
+        );
+    }
+
+    private void cancel(PreLoginEvent event, Configuration messages, String path) {
+        cancel(event, messages, path, TextReplacer.builder());
+    }
+
+    private void cancel(PreLoginEvent event, Configuration messages, String path, TextReplacer replacer) {
+        event.setReason(
+            new TextComponent(
+                TextUtilities.colorize(
+                    replacer.apply(
+                        messages
+                            .getString(path, path)
+                            .replace("\\n", "\n")
+                    )
+                )
+            )
         );
     }
 

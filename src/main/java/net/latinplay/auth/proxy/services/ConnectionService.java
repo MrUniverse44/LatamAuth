@@ -45,6 +45,12 @@ public class ConnectionService implements AdvancedModule {
     }
 
     public CompletableFuture<ConnectionData> getPlayerConnection(String username) {
+        ConnectionData present = dataCache.getIfPresent(username);
+
+        if (present != null) {
+            return CompletableFuture.completedFuture(present);
+        }
+
         List<CompletableFuture<ConnectionData>> futures = connectionMethods.stream()
             .map(connection -> CompletableFuture.supplyAsync(() -> connection.load(username), EXECUTOR_SERVICE))
             .toList();
@@ -52,11 +58,17 @@ public class ConnectionService implements AdvancedModule {
         return CompletableFuture.allOf(
             futures.toArray(new CompletableFuture[0])
         ).thenApply(
-            value -> futures.stream()
-                .map(CompletableFuture::join)
-                .filter(ConnectionData::isSuccessfully)
-                .findFirst()
-                .orElse(new ConnectionData(ConnectionResult.ERROR))
+            value -> {
+                ConnectionData result = futures.stream()
+                        .map(CompletableFuture::join)
+                        .filter(ConnectionData::isSuccessfully)
+                        .findFirst()
+                        .orElse(new ConnectionData(ConnectionResult.ERROR));
+
+                dataCache.put(username, result);
+
+                return result;
+            }
         );
     }
 

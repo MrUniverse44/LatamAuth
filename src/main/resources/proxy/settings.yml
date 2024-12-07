@@ -2,3 +2,4 @@ settings:
   # Max account limit per IP
   max-accounts: 5
   uuid-generator: MOJANG
+  auto-fallback-to-lobbies: true
