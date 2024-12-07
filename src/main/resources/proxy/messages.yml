@@ -3,3 +3,27 @@ messages:
     invalid-name: "&cInvalid name, please change it."
     max-account-limit: "&cMax account limit reached."
     service-issue: "&cCan't connect now, please try later"
+    occupied-username: "&cThis player is already registered on this server by other user."
+    username-from-premium-account: "&cThis username is &lPremium&c and you are not premium."
+    invalid-case-name: "&aThis name was already registered but with a different name case,"
+  error:
+    can-not-find-player: "&cThis is a big problem, this player can't be find on the database, maybe you have connection issues with your database, this can rewrite your database data, please be careful and prevent this"
+  auth:
+    login: "&9Please login with /login (password)"
+    register: "&9Please register with /register (password) (password) <code>"
+    already-logged: "&eYou are already logged"
+    error-not-registered: "&cYou are not registered yet."
+    password-not-match: "&cIncorrect password"
+    logged-success: "&aSuccessfully logged"
+    error-already-registered: "&cYou are already registered"
+    wrong-password-command: "&cPlease use /register (password) (password) <code>"
+    password-mismatch: "&cPasswords seems to no be the same."
+    registration-successfully: "&aRegistered!"
+  titles:
+    auth:
+      login:
+        title: "&a&lLogin"
+        subtitle: "&fPlease login with /login"
+      register:
+        title: "&9&lRegister"
+        subtitle: "&fPlease register with /register"
