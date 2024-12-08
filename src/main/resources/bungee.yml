@@ -1,8 +1,5 @@
 name: LatamAuth
 version: '1.0.0'
 main: net.latinplay.auth.proxy.LatamAuth
-description: Auth plugin
 author: JustJustin
-authors:
-  - JustJustin
 api-version: '1.13'
