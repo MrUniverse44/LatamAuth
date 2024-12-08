@@ -1,7 +1,23 @@
 settings:
   # Max account limit per IP
   max-accounts: 5
+  # Generates a new uuid for players
+  # You can use these generators: RANDOM, CRACKED, MOJANG
   uuid-generator: MOJANG
+  # Don't kick players to the auth if a server is shutdown
   auto-fallback-to-lobbies: true
+  # Register a premium user without using /register
+  auto-register-premium-users: true
   # Providers: ARGON2, BCRYPT
   password-provider: ARGON2
+  # Mongo configuration
+  mongodb:
+    uri: "mongodb://uri here"
+    database: "LatamAuth"
+  # Lobby servers
+  lobby-servers:
+    - "Lobby01"
+    - "Lobby02"
+  auth-servers:
+    - "Auth01"
+    - "Auth02"

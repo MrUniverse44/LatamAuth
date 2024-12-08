@@ -1,4 +1,8 @@
 name: LatamAuth
 version: '1.0.0'
 main: net.latinplay.auth.bukkit.LatamAuth
+description: Auth plugin
 api-version: '1.13'
+author: JustJustin
+authors:
+  - JustJustin
