@@ -24,12 +24,14 @@ public class LatamAuth extends BukkitMeteorPlugin implements Implementer {
     public void registerModules() {
         // Registered gson
         registerImpl(Gson.class, new Gson(), true);
+        // Creates messages file instance
         File messagesFile = new File(getDataFolder(), "messages.yml");
+        // Checks if the file is empty
         if (messagesFile.exists() && FileInstaller.isFileEmpty(messagesFile)) {
             // This is used for empty files
             messagesFile.delete();
         }
-        // Overwrite settings.yml implement
+        // Creates a messages.yml implement
         registerImpl(
             FileConfiguration.class,
             "messages.yml",
@@ -38,7 +40,9 @@ public class LatamAuth extends BukkitMeteorPlugin implements Implementer {
                 "bukkit/messages.yml"
             )
         );
+        // Creates settings file instance
         File settingsFile = new File(getDataFolder(), "settings.yml");
+        // Checks if a file is empty
         if (settingsFile.exists() && FileInstaller.isFileEmpty(settingsFile)) {
             // This is used for empty files
             settingsFile.delete();

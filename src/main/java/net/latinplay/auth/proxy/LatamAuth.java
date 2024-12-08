@@ -10,7 +10,6 @@ import net.latinplay.auth.utils.file.FileInstaller;
 import net.md_5.bungee.config.Configuration;
 
 import java.io.File;
-import java.security.SecureRandom;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
 
@@ -32,39 +31,6 @@ public final class LatamAuth extends BungeeMeteorPlugin implements Implementer {
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @Override
     public void registerModules() {
-        // Registered gson
-        registerImpl(Gson.class, new Gson(), true);
-        File messagesFile = new File(getDataFolder(), "messages.yml");
-        if (messagesFile.exists() && FileInstaller.isFileEmpty(messagesFile)) {
-            // This is used for empty files
-            messagesFile.delete();
-        }
-        // Overwrite settings.yml implement
-        registerImpl(
-            Configuration.class,
-            "messages.yml",
-            load(
-                new File(getDataFolder(), "messages.yml"),
-                "proxy/messages.yml"
-            )
-        );
-        File settingsFile = new File(getDataFolder(), "settings.yml");
-        if (settingsFile.exists() && FileInstaller.isFileEmpty(settingsFile)) {
-            // This is used for empty files
-            settingsFile.delete();
-        }
-        // Overwrite settings.yml implement
-        registerImpl(
-            Configuration.class,
-            "settings.yml",
-            load(
-                settingsFile,
-                "proxy/settings.yml"
-            )
-        );
-        // Register the executor pool for async things
-        registerImpl(ExecutorService.class, new ForkJoinPool(4), true);
-
         registerModule(
             ConnectionService.class,
             IpService.class,
@@ -77,14 +43,49 @@ public final class LatamAuth extends BungeeMeteorPlugin implements Implementer {
         ).finish();
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Override
     public void registerDatabases() {
-        Configuration configuration = fetch(Configuration.class, "settings.yml");
-
+        // Registered gson
+        registerImpl(Gson.class, new Gson(), true);
+        // Creates the messages file instance
+        File messagesFile = new File(getDataFolder(), "messages.yml");
+        // This is used only to verify if a file is empty or not
+        if (messagesFile.exists() && FileInstaller.isFileEmpty(messagesFile)) {
+            // This is used for empty files
+            messagesFile.delete();
+        }
+        // Creates a messages.yml implement
+        registerImpl(
+            Configuration.class,
+            "messages.yml",
+            load(
+                new File(getDataFolder(), "messages.yml"),
+                "/proxy/messages.yml"
+            )
+        );
+        // Creates the settings file instance
+        File settingsFile = new File(getDataFolder(), "settings.yml");
+        // This is used only to verify if a file is empty or not
+        if (settingsFile.exists() && FileInstaller.isFileEmpty(settingsFile)) {
+            // This is used for empty files
+            settingsFile.delete();
+        }
+        // Obtain Configuration instance
+        Configuration settings = load(settingsFile, "/proxy/settings.yml");
+        // Overwrite settings.yml implement
+        registerImpl(
+            Configuration.class,
+            "settings.yml",
+            settings
+        );
+        // Register the executor pool for async things
+        registerImpl(ExecutorService.class, new ForkJoinPool(4), true);
+        // Register database
         registerDatabase(
             new MongoDatabaseService(
-                configuration.getString("settings.mongodb.uri"),
-                configuration.getString("settings.mongodb.database"),
+                settings.getString("settings.mongodb.uri", ""),
+                settings.getString("settings.mongodb.database", "LatamAuth"),
                 RegistrationType.DOUBLE_REGISTER
             )
         );
