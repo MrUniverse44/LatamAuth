@@ -6,6 +6,7 @@ import me.blueslime.bungeemeteor.implementation.Implementer;
 import me.blueslime.bungeemeteor.storage.type.MongoDatabaseService;
 import me.blueslime.bungeemeteor.storage.type.RegistrationType;
 import net.latinplay.auth.proxy.services.*;
+import net.latinplay.auth.utils.file.FileInstaller;
 import net.md_5.bungee.config.Configuration;
 
 import java.io.File;
@@ -28,10 +29,16 @@ public final class LatamAuth extends BungeeMeteorPlugin implements Implementer {
         );
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Override
     public void registerModules() {
         // Registered gson
         registerImpl(Gson.class, new Gson(), true);
+        File messagesFile = new File(getDataFolder(), "messages.yml");
+        if (messagesFile.exists() && FileInstaller.isFileEmpty(messagesFile)) {
+            // This is used for empty files
+            messagesFile.delete();
+        }
         // Overwrite settings.yml implement
         registerImpl(
             Configuration.class,
@@ -41,12 +48,17 @@ public final class LatamAuth extends BungeeMeteorPlugin implements Implementer {
                 "proxy/messages.yml"
             )
         );
+        File settingsFile = new File(getDataFolder(), "settings.yml");
+        if (settingsFile.exists() && FileInstaller.isFileEmpty(settingsFile)) {
+            // This is used for empty files
+            settingsFile.delete();
+        }
         // Overwrite settings.yml implement
         registerImpl(
             Configuration.class,
             "settings.yml",
             load(
-                new File(getDataFolder(), "settings.yml"),
+                settingsFile,
                 "proxy/settings.yml"
             )
         );
