@@ -8,7 +8,7 @@ settings:
   auto-fallback-to-lobbies: true
   # Register a premium user without using /register
   auto-register-premium-users: true
-  # Providers: ARGON2, BCRYPT
+  # Providers: ARGON2, BCRYPT, SCRYPT
   password-provider: ARGON2
   # Mongo configuration
   mongodb:

@@ -6,7 +6,8 @@ import java.util.Locale;
 
 public enum PasswordMethod {
     BCRYPT,
-    ARGON2;
+    ARGON2,
+    SCRYPT;
 
     public static PasswordMethod fromString(String parameter) {
         return PluginConsumer.ofUnchecked(
