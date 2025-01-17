@@ -39,7 +39,9 @@ public class ServerConnectListener implements Listener, AdvancedModule {
         User user = optional.get();
 
         if (event.getReason() == ServerConnectEvent.Reason.JOIN_PROXY || event.getPlayer().getServer() == null) {
-            Optional<ServerInfo> optionalServer = user.isPremium() ? service.find(true) : service.find(false);
+            Optional<ServerInfo> optionalServer = user.isPremium() ?
+                    service.find(true, user.isTwoStep())
+                    : service.find(false, user.isTwoStep());
 
             optionalServer.ifPresentOrElse(
                 event::setTarget,
@@ -47,7 +49,7 @@ public class ServerConnectListener implements Listener, AdvancedModule {
                     // * Lobbies are shutdown, so we need to move players to the auth
                     // * But we can't move players from auth due to extra security
                     if (user.isPremium()) {
-                        Optional<ServerInfo> optionalAuth = service.find(false);
+                        Optional<ServerInfo> optionalAuth = service.find(false, user.isTwoStep());
                         optionalAuth.ifPresent(event::setTarget);
                     }
                 }

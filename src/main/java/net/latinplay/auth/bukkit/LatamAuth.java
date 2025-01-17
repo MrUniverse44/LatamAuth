@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import me.blueslime.bukkitmeteor.BukkitMeteorPlugin;
 import me.blueslime.bukkitmeteor.implementation.Implementer;
 
+import net.latinplay.auth.bukkit.commands.EditModeCommand;
 import net.latinplay.auth.bukkit.services.ListenerService;
 import net.latinplay.auth.bukkit.services.ProxyMessageService;
 
@@ -56,6 +57,13 @@ public class LatamAuth extends BukkitMeteorPlugin implements Implementer {
                 "bukkit/settings.yml"
             )
         );
+        EditModeCommand command = createInstance(EditModeCommand.class);
+        registerImpl(
+            EditModeCommand.class,
+            command,
+            true
+        );
+        command.register();
 
         registerModule(
             ProxyMessageService.class,

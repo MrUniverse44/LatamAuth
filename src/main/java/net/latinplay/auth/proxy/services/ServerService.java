@@ -20,11 +20,13 @@ public class ServerService implements AdvancedModule {
             : configuration.getStringList("settings.auth-servers");
     }
 
-    public Optional<ServerInfo> find(boolean lobby) {
+    public Optional<ServerInfo> find(boolean lobby, boolean twoStep) {
         Configuration configuration = fetch(Configuration.class, "settings.yml");
 
         List<String> serverList = lobby ?
-                configuration.getStringList("settings.lobby-servers")
+                twoStep ?
+                configuration.getStringList("settings.auth-servers")
+                : configuration.getStringList("settings.lobby-servers")
                 : configuration.getStringList("settings.auth-servers");
 
         if (serverList.isEmpty()) {

@@ -173,4 +173,8 @@ public class User implements StorageObject {
     public void setLoaded(boolean loaded) {
         this.loaded = loaded;
     }
+
+    public boolean isTwoStep() {
+        return false;
+    }
 }
