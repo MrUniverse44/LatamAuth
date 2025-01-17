@@ -93,7 +93,7 @@ public class RegisterCommand extends ProxyCommand {
         user.setLogged(true);
         user.setRegistered(true);
 
-        fetch(ServerService.class).find(true).ifPresent(player::connect);
+        fetch(ServerService.class).find(true, false).ifPresent(player::connect);
         fetch(UserService.class).update(user);
     }
 }

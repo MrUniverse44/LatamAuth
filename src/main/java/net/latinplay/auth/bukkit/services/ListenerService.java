@@ -22,6 +22,7 @@ public class ListenerService implements AdvancedModule {
             new PlayerDropListener(),
             new PlayerInteractListener(),
             new PlayerItemHeldListener(),
+            new PlayerChatListener(),
             new PlayerQuitListener(),
             // * WORLD LISTENERS
             new WeatherChangeListener()

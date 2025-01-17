@@ -22,7 +22,7 @@ public class ServerKickListener implements Listener, AdvancedModule {
 
         if (settings.getBoolean("settings.auto-fallback-to-lobbies", true)) {
             if (event.getState() == ServerKickEvent.State.CONNECTED) {
-                Optional<ServerInfo> optional = fetch(ServerService.class).find(true);
+                Optional<ServerInfo> optional = fetch(ServerService.class).find(true, false);
 
                 optional.ifPresent(server -> {
                     event.setCancelled(true);
