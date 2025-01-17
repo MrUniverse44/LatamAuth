@@ -31,6 +31,7 @@ public final class LatamAuth extends BungeeMeteorPlugin implements Implementer {
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @Override
     public void registerModules() {
+        registerImpl(LatamAuth.class, this, true);
         registerModule(
             ConnectionService.class,
             IpService.class,

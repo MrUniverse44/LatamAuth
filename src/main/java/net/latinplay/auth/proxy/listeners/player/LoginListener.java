@@ -38,6 +38,9 @@ public class LoginListener implements Listener, AdvancedModule {
                     event.setCancelled(true);
                 }
 
+                fetch(MeteorLogger.class).debug(object.getObject());
+                fetch(MeteorLogger.class).debug("name: " + event.getConnection().getName());
+
                 Optional<User> userOptional = fetch(UserService.class).find(
                     object.getObject(), event.getConnection().getName()
                 );
