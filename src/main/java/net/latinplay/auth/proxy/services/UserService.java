@@ -12,7 +12,7 @@ public class UserService implements AdvancedModule {
     private final Map<UUID, User> playerMap = new HashMap<>();
     private final Map<String, ReferencedObject> playerNameMap = new HashMap<>();
 
-    public Optional<User> find(UUID uuid, String username) {
+    public Optional<User> find(UUID uuid, String username, boolean premium) {
         return Optional.of(
             playerMap.computeIfAbsent(
                 uuid,
@@ -23,14 +23,14 @@ public class UserService implements AdvancedModule {
                             User.class,
                             id.toString()
                         );
-                    return optional.orElse(new User(uuid, username));
+                    return optional.orElse(new User(uuid, username, premium));
                 }
             )
         );
     }
 
-    public Optional<User> find(String uuid, String username) {
-        return find(UUID.fromString(uuid), username);
+    public Optional<User> find(String uuid, String username, boolean premium) {
+        return find(UUID.fromString(uuid), username, premium);
     }
 
     public Optional<ReferencedObject> findBy(String name) {

@@ -17,7 +17,7 @@ public class PlayerDisconnectListener implements Listener, AdvancedModule {
     public void on(PlayerDisconnectEvent event) {
         ProxiedPlayer player = event.getPlayer();
 
-        Optional<User> optional = fetch(UserService.class).find(player.getUniqueId(), player.getName());
+        Optional<User> optional = fetch(UserService.class).find(player.getUniqueId(), player.getName(), true);
 
         if (optional.isEmpty()) {
             fetch(MeteorLogger.class).error(

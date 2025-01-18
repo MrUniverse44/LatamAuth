@@ -34,7 +34,7 @@ public class LoginCommand extends ProxyCommand {
         }
 
         ProxiedPlayer player = sender.toPlayer();
-        Optional<User> optional = fetch(UserService.class).find(player.getUniqueId(), player.getName());
+        Optional<User> optional = fetch(UserService.class).find(player.getUniqueId(), player.getName(), true);
         Configuration messages = fetch(Configuration.class, "messages.yml");
 
         if (optional.isEmpty()) {

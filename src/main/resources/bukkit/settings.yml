@@ -6,6 +6,7 @@ settings:
     player-interact: true
     inventory-open: true
     weather-change: true
+    entity-damage: true
     player-drop: true
     block-place: true
     block-break: true

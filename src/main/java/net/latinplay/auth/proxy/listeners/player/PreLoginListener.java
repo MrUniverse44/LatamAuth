@@ -1,9 +1,9 @@
 package net.latinplay.auth.proxy.listeners.player;
 
-import me.blueslime.bukkitmeteor.logs.MeteorLogger;
 import me.blueslime.bungeemeteor.implementation.module.AdvancedModule;
 import me.blueslime.bungeemeteor.libs.utilitiesapi.text.TextReplacer;
 import me.blueslime.bungeemeteor.libs.utilitiesapi.text.TextUtilities;
+import me.blueslime.bungeemeteor.logs.MeteorLogger;
 import me.blueslime.bungeemeteor.storage.object.ReferencedObject;
 import net.latinplay.auth.proxy.LatamAuth;
 import net.latinplay.auth.proxy.services.ConnectionService;
@@ -85,17 +85,17 @@ public class PreLoginListener implements Listener, AdvancedModule {
                 UserSearch search;
 
                 if (!data.isSuccessfully()) {
-                    search = validate(username, true);
+                    search = validate(username);
                 } else {
                     UUID premiumUUID = data.getUniqueId();
-                    Optional<User> databaseUser = fetch(UserService.class).find(premiumUUID, username);
+                    Optional<User> databaseUser = fetch(UserService.class).find(premiumUUID, username, true);
 
                     if (databaseUser.isPresent()) {
                         User databaseUserData = databaseUser.get();
 
                         search = validate(databaseUserData, username);
                     } else {
-                        search = validate(username, true);
+                        search = validate(data.getUniqueId(), username);
                     }
 
                 }
@@ -108,12 +108,14 @@ public class PreLoginListener implements Listener, AdvancedModule {
 
                     UUID uuid = generator.generate(
                         username,
-                        user != null && user.getUniqueId() != null ?
-                            user.getUniqueId() :
-                            null
+                        search.getPremiumUniqueId() != null ?
+                            search.getPremiumUniqueId() :
+                            user != null && user.getUniqueId() != null ?
+                                user.getUniqueId() :
+                                null
                     );
 
-                    Optional<User> databaseUser = fetch(UserService.class).find(uuid, username);
+                    Optional<User> databaseUser = fetch(UserService.class).find(uuid, username, search.getPremiumUniqueId() != null || data.isSuccessfully() && data.getUniqueId() != null);
 
                     if (databaseUser.isPresent()) {
                         User databaseUserData = databaseUser.get();
@@ -125,7 +127,12 @@ public class PreLoginListener implements Listener, AdvancedModule {
                         }
                     }
 
-                    if (user != null && user.isReliable() && settings.getBoolean("settings.auto-register-premium-users")) {
+                    if (
+                        user != null &&
+                        user.isReliable() &&
+                        settings.getBoolean("settings.auto-register-premium-users") &&
+                        !user.getPremiumIdentifier().isEmpty()
+                    ) {
                         if (!user.getUsername().contentEquals(username)) {
                             event.setCancelled(true);
                             cancel(event, messages, "messages.kick-reasons.username-from-premium-account", search.getSearchResult().getReplacer());
@@ -134,8 +141,9 @@ public class PreLoginListener implements Listener, AdvancedModule {
                         }
                         UUID oldenUUID = user.getUniqueId();
                         user = new User(
-                                uuid,
-                                username
+                            uuid,
+                            username,
+                            true
                         );
                         user.setPremiumIdentifier(oldenUUID.toString());
                         user.setPremium(true);
@@ -144,13 +152,19 @@ public class PreLoginListener implements Listener, AdvancedModule {
                             fetch(MeteorLogger.class).warn("The premium data for %s is not reliable, the user may not have the same name capitalization as the premium one. It is not safe to auto-register this user. Switching to offline registration!".formatted(username));
                         }
                         user = new User(
-                                uuid,
-                                username
+                            uuid,
+                            username,
+                            search.getPremiumUniqueId() != null
                         );
+
+                        if (search.getPremiumUniqueId() != null) {
+                            user.setPremium(true);
+                            user.setPremiumIdentifier(search.getPremiumUniqueId().toString());
+                        }
                     }
                     fetch(UserService.class).update(user);
                     event.getConnection().setOnlineMode(user.isPremium());
-                    event.getConnection().setUniqueId(user.getUniqueId());
+                    event.getConnection().setUniqueId(user.isPremium() && user.getPremiumIdentifier() != null ? UUID.fromString(user.getPremiumIdentifier()) : user.getUniqueId());
                     event.completeIntent(fetch(LatamAuth.class));
                     return;
                 }
@@ -214,7 +228,7 @@ public class PreLoginListener implements Listener, AdvancedModule {
         return new UserSearch(UserSearchResult.SUCCESSFULLY);
     }
 
-    private UserSearch validate(String username, boolean generate) {
+    private UserSearch validate(String username) {
         // Get the user by the name not case-sensitively
         Optional<ReferencedObject> user = fetch(UserService.class).findBy(username);
 
@@ -224,20 +238,43 @@ public class PreLoginListener implements Listener, AdvancedModule {
 
             // This object don't exist in database.
             if (object.getObject() == null || object.getOriginalId() == null) {
-                if (generate) {
-                    return new UserSearch(UserSearchResult.NEW_USER);
-                } else {
-                    return new UserSearch(UserSearchResult.NOT_FOUND);
-                }
+                return new UserSearch(UserSearchResult.NEW_USER);
             }
             if (!object.getOriginalId().contentEquals(username)) {
                 return new UserSearch(
                     UserSearchResult.INVALID_CASE.replace("%username%", object.getOriginalId())
                 );
             }
-            User result = fetch(UserService.class).find(object.getObject(), username).orElse(null);
+            User result = fetch(UserService.class).find(object.getObject(), username, false).orElse(null);
             if (result == null) {
                 return new UserSearch(UserSearchResult.NEW_USER);
+            } else {
+                return new UserSearch(UserSearchResult.SUCCESSFULLY, result);
+            }
+        }
+        return new UserSearch(UserSearchResult.DATABASE_CONNECTION_ISSUE);
+    }
+
+    private UserSearch validate(UUID premiumUniqueId, String username) {
+        // Get the user by the name not case-sensitively
+        Optional<ReferencedObject> user = fetch(UserService.class).findBy(username);
+
+        if (user.isPresent()) {
+            // Return object.
+            ReferencedObject object = user.get();
+
+            // This object don't exist in database.
+            if (object.getObject() == null || object.getOriginalId() == null) {
+                return new UserSearch(UserSearchResult.NEW_USER, premiumUniqueId);
+            }
+            if (!object.getOriginalId().contentEquals(username)) {
+                return new UserSearch(
+                        UserSearchResult.INVALID_CASE.replace("%username%", object.getOriginalId())
+                );
+            }
+            User result = fetch(UserService.class).find(object.getObject(), username, premiumUniqueId != null).orElse(null);
+            if (result == null) {
+                return new UserSearch(UserSearchResult.NEW_USER, premiumUniqueId);
             } else {
                 return new UserSearch(UserSearchResult.SUCCESSFULLY, result);
             }

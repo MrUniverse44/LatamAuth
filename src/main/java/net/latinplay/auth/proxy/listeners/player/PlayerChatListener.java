@@ -22,7 +22,7 @@ public class PlayerChatListener implements Listener, AdvancedModule {
             return;
         }
 
-        Optional<User> optional = fetch(UserService.class).find(player.getUniqueId(), player.getName());
+        Optional<User> optional = fetch(UserService.class).find(player.getUniqueId(), player.getName(), true);
         Configuration messages = fetch(Configuration.class, "messages.yml");
         Sender sender = Sender.build(player);
 

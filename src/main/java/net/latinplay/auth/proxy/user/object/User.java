@@ -77,14 +77,14 @@ public class User implements StorageObject {
         this.id = id;
     }
 
-    public User(UUID uuid, String username) {
+    public User(UUID uuid, String username, boolean premium) {
         this.uuid = uuid;
         this.username = username;
-        this.premiumIdentifier = uuid.toString();
+        this.premiumIdentifier = premium ? uuid.toString() : "";
         this.registered = false;
         this.reliable = false;
         this.password = null;
-        this.premium = false;
+        this.premium = premium;
         this.logged = false;
         this.loaded = false;
         this.ip = "";

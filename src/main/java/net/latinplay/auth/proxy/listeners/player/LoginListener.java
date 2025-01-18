@@ -34,15 +34,16 @@ public class LoginListener implements Listener, AdvancedModule {
 
         referenced.ifPresentOrElse(
             object -> {
+                String userId;
+
                 if (object.getObject() == null || object.getOriginalId() == null) {
-                    event.setCancelled(true);
+                    userId = event.getConnection().getUniqueId().toString();
+                } else {
+                    userId = object.getObject();
                 }
 
-                fetch(MeteorLogger.class).debug(object.getObject());
-                fetch(MeteorLogger.class).debug("name: " + event.getConnection().getName());
-
                 Optional<User> userOptional = fetch(UserService.class).find(
-                    object.getObject(), event.getConnection().getName()
+                    userId, event.getConnection().getName(), true
                 );
 
                 if (userOptional.isEmpty()) {
@@ -71,7 +72,7 @@ public class LoginListener implements Listener, AdvancedModule {
                             false
                         );
                     },
-                    e -> {}
+                    e -> fetch(MeteorLogger.class).error(e, "Can't rewrite uniqueId of a user.")
                 );
             },
             () -> event.setCancelled(true)

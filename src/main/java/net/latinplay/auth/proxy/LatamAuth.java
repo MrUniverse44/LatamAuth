@@ -10,6 +10,7 @@ import net.latinplay.auth.utils.file.FileInstaller;
 import net.md_5.bungee.config.Configuration;
 
 import java.io.File;
+import java.security.SecureRandom;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
 
@@ -49,6 +50,8 @@ public final class LatamAuth extends BungeeMeteorPlugin implements Implementer {
     public void registerDatabases() {
         // Registered gson
         registerImpl(Gson.class, new Gson(), true);
+        // Register SecureRandom
+        registerImpl(SecureRandom.class, new SecureRandom(), true);
         // Creates the messages file instance
         File messagesFile = new File(getDataFolder(), "messages.yml");
         // This is used only to verify if a file is empty or not

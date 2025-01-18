@@ -10,6 +10,7 @@ public class PlayerQuitListener implements Listeners {
     @EventHandler
     public void on(PlayerQuitEvent event) {
         fetch(EditModeCommand.class).getEditors().remove(event.getPlayer().getUniqueId());
+        event.setQuitMessage(null);
     }
 
 }
