@@ -63,43 +63,43 @@ public class ServerConnectListener implements Listener, AdvancedModule {
                     }
                 }
             );
-            return;
-        }
 
-        if (!user.isLogged() && user.isPremium()) {
-            if (!user.isRegistered()) {
+            if (!user.isLogged() && user.isPremium()) {
+                if (!user.isRegistered()) {
+                    user.setLogged(true);
+
+                    PasswordProvider provider = fetch(PasswordService.class).fetchProvider();
+
+                    String generatedPassword = generate();
+
+                    user.setPassword(
+                            provider.hashPassword(generatedPassword)
+                    );
+                    Sender.build(event.getPlayer()).send(
+                            fetch(Configuration.class, "messages.yml"),
+                            "messages.automatically-generated-password",
+                            "&aYour password has been successfully generated because you are premium, if you want to change it you need to use /changepassword command. Your password: &c<password>",
+                            TextReplacer.builder()
+                                    .replace("<password>", generatedPassword)
+                    );
+                    user.setRegistered(true);
+                    Sender.build(event.getPlayer()).send(
+                            fetch(Configuration.class, "messages.yml"),
+                            "messages.automatically-logged",
+                            "&aYou has been automatically logged because you are premium"
+                    );
+                    fetch(StorageDatabase.class).saveOrUpdateAsync(user);
+                    return;
+                }
                 user.setLogged(true);
-
-                PasswordProvider provider = fetch(PasswordService.class).fetchProvider();
-
-                String generatedPassword = generate();
-
-                user.setPassword(
-                    provider.hashPassword(generatedPassword)
-                );
                 Sender.build(event.getPlayer()).send(
-                    fetch(Configuration.class, "messages.yml"),
-                    "messages.automatically-generated-password",
-                    "&aYour password has been successfully generated because you are premium, if you want to change it you need to use /changepassword command. Your password: &c<password>",
-                    TextReplacer.builder()
-                        .replace("<password>", generatedPassword)
-                );
-                user.setRegistered(true);
-                Sender.build(event.getPlayer()).send(
-                    fetch(Configuration.class, "messages.yml"),
-                    "messages.automatically-logged",
-                    "&aYou has been automatically logged because you are premium"
+                        fetch(Configuration.class, "messages.yml"),
+                        "messages.automatically-logged",
+                        "&aYou has been automatically logged because you are premium"
                 );
                 fetch(StorageDatabase.class).saveOrUpdateAsync(user);
                 return;
             }
-            user.setLogged(true);
-            Sender.build(event.getPlayer()).send(
-                fetch(Configuration.class, "messages.yml"),
-                "messages.automatically-logged",
-                "&aYou has been automatically logged because you are premium"
-            );
-            fetch(StorageDatabase.class).saveOrUpdateAsync(user);
             return;
         }
 

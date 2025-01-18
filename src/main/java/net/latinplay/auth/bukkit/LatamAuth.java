@@ -25,6 +25,8 @@ public class LatamAuth extends BukkitMeteorPlugin implements Implementer {
     public void registerModules() {
         // Registered gson
         registerImpl(Gson.class, new Gson(), true);
+        // Register main class
+        registerImpl(LatamAuth.class, this, true);
         // Creates messages file instance
         File messagesFile = new File(getDataFolder(), "messages.yml");
         // Checks if the file is empty
