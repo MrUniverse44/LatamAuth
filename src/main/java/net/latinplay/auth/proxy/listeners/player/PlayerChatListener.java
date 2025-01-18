@@ -50,10 +50,12 @@ public class PlayerChatListener implements Listener, AdvancedModule {
 
         if (user.isRegistered()) {
             sender.send(messages, "messages.auth.login");
+            event.setCancelled(true);
             return;
         }
 
         sender.send(messages, "messages.auth.register");
+        event.setCancelled(true);
     }
 
 }
