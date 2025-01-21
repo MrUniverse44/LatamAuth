@@ -41,7 +41,8 @@ public final class LatamAuth extends BungeeMeteorPlugin implements Implementer {
             ServerService.class,
             ListenerService.class,
             PasswordService.class,
-            CommandService.class
+            CommandService.class,
+            ChatModService.class
         ).finish();
     }
 

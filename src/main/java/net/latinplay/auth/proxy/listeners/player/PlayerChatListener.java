@@ -2,6 +2,7 @@ package net.latinplay.auth.proxy.listeners.player;
 
 import me.blueslime.bungeemeteor.implementation.module.AdvancedModule;
 import me.blueslime.bungeeutilitiesapi.commands.sender.Sender;
+import net.latinplay.auth.proxy.services.ChatModService;
 import net.latinplay.auth.proxy.services.UserService;
 import net.latinplay.auth.proxy.user.object.User;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -45,6 +46,7 @@ public class PlayerChatListener implements Listener, AdvancedModule {
         User user = optional.get();
 
         if (user.isLogged()) {
+            inspect(user, event);
             return;
         }
 
@@ -56,6 +58,12 @@ public class PlayerChatListener implements Listener, AdvancedModule {
 
         sender.send(messages, "messages.auth.register");
         event.setCancelled(true);
+    }
+
+    public void inspect(User user, ChatEvent event) {
+        if (fetch(ChatModService.class).checkInvalid(user, event)) {
+            event.setCancelled(true);
+        }
     }
 
 }

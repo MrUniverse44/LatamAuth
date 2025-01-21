@@ -4,6 +4,7 @@
 
 # Features
 
+* This plugin has extra features because this plugin is for 'LatinPlay Server' like: Chat moderator and other stuff.
 * Auto Login for Premiums
 * 2FA With Discord
 * Executes everything important in different threads to protect the proxy from attacks

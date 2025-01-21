@@ -1,0 +1,9 @@
+chat-mod:
+  enabled: true
+  flood:
+    max-repetitions: 4
+  censored-words:
+    list: []
+  other-domain:
+    ignore:
+      - "your.domain.here"
