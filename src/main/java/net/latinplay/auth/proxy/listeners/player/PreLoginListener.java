@@ -147,6 +147,7 @@ public class PreLoginListener implements Listener, AdvancedModule {
                         );
                         user.setPremiumIdentifier(oldenUUID.toString());
                         user.setPremium(true);
+                        user.setLogged(false);
                     } else {
                         if (user != null && !user.isReliable()) {
                             fetch(MeteorLogger.class).warn("The premium data for %s is not reliable, the user may not have the same name capitalization as the premium one. It is not safe to auto-register this user. Switching to offline registration!".formatted(username));
@@ -156,6 +157,7 @@ public class PreLoginListener implements Listener, AdvancedModule {
                             username,
                             search.getPremiumUniqueId() != null
                         );
+                        user.setLogged(false);
 
                         if (search.getPremiumUniqueId() != null) {
                             user.setPremium(true);
@@ -193,6 +195,7 @@ public class PreLoginListener implements Listener, AdvancedModule {
                     event.getConnection().setOnlineMode(
                         search.getUser().isPremium()
                     );
+                    search.getUser().setLogged(false);
                     fetch(UserService.class).update(search.getUser());
                     event.completeIntent(fetch(LatamAuth.class));
                 }

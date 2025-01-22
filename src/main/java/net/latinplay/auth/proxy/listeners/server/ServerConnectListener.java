@@ -5,6 +5,7 @@ import me.blueslime.bungeemeteor.libs.utilitiesapi.commands.sender.Sender;
 import me.blueslime.bungeemeteor.libs.utilitiesapi.text.TextReplacer;
 import me.blueslime.bungeemeteor.logs.MeteorLogger;
 import me.blueslime.bungeemeteor.storage.StorageDatabase;
+import net.latinplay.auth.events.AuthAuthenticationEvent;
 import net.latinplay.auth.proxy.password.object.PasswordProvider;
 import net.latinplay.auth.proxy.services.PasswordService;
 import net.latinplay.auth.proxy.services.ServerService;
@@ -67,6 +68,7 @@ public class ServerConnectListener implements Listener, AdvancedModule {
             if (!user.isLogged() && user.isPremium()) {
                 if (!user.isRegistered()) {
                     user.setLogged(true);
+                    AuthAuthenticationEvent.call(player, user);
 
                     PasswordProvider provider = fetch(PasswordService.class).fetchProvider();
 
@@ -92,6 +94,8 @@ public class ServerConnectListener implements Listener, AdvancedModule {
                     return;
                 }
                 user.setLogged(true);
+                AuthAuthenticationEvent.call(player, user);
+
                 Sender.build(event.getPlayer()).send(
                         fetch(Configuration.class, "messages.yml"),
                         "messages.automatically-logged",

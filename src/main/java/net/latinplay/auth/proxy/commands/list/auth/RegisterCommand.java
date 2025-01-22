@@ -2,6 +2,7 @@ package net.latinplay.auth.proxy.commands.list.auth;
 
 import me.blueslime.bungeemeteor.libs.utilitiesapi.commands.sender.Sender;
 import me.blueslime.bungeemeteor.libs.utilitiesapi.text.TextReplacer;
+import net.latinplay.auth.events.AuthAuthenticationEvent;
 import net.latinplay.auth.proxy.commands.object.ProxyCommand;
 import net.latinplay.auth.proxy.password.object.PasswordProvider;
 import net.latinplay.auth.proxy.services.PasswordService;
@@ -95,5 +96,6 @@ public class RegisterCommand extends ProxyCommand {
 
         fetch(ServerService.class).find(true, false).ifPresent(player::connect);
         fetch(UserService.class).update(user);
+        AuthAuthenticationEvent.call(sender.toPlayer(), user);
     }
 }

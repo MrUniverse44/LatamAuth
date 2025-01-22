@@ -1,6 +1,7 @@
 package net.latinplay.auth.proxy.commands.list.auth;
 
 import me.blueslime.bungeemeteor.libs.utilitiesapi.commands.sender.Sender;
+import net.latinplay.auth.events.AuthAuthenticationEvent;
 import net.latinplay.auth.proxy.commands.object.ProxyCommand;
 import net.latinplay.auth.proxy.password.object.PasswordProvider;
 import net.latinplay.auth.proxy.services.PasswordService;
@@ -66,5 +67,6 @@ public class LoginCommand extends ProxyCommand {
         sender.send(messages, "messages.auth.logged-success");
         user.setLogged(true);
         fetch(UserService.class).update(user);
+        AuthAuthenticationEvent.call(sender.toPlayer(), user);
     }
 }
